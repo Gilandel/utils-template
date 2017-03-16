@@ -1,0 +1,107 @@
+{
+	"size" : 0,
+	"query" : {
+		"filtered" : {
+			"query" : {
+				"match_all" : {}
+			},
+			"filter" : {
+				"bool" : {
+					"should" : [{
+							"terms" : {
+								"app_id" : ["my_app_id"]
+							}
+						}
+					],
+					"must" : [{
+							"range" : {
+								"review_date" : {
+									"gte" : "",
+									"lte" : "",
+									"format" : "epoch_millis"
+								}
+							}
+						}
+					],
+					"must_not" : []
+				}
+			}
+		}
+	},
+	"aggs" : {
+		"group" : {
+			"filters" : {
+				"filters" : {
+					"first_group" : {
+						"bool" : {
+							"should" : [{
+									"terms" : {
+										"app_id" : [
+											""
+										]
+									}
+								}
+							]
+						}
+					}
+					,
+					"second_group" : {
+						"bool" : {
+							"should" : [{
+									"terms" : {
+										"app_id" : [
+											""
+										]
+									}
+								}
+							]
+						}
+					}
+				}
+			},
+			"aggs" : {
+				"date" : {
+					"date_histogram" : {
+						"field" : "review_date",
+						"interval" : "",
+						"time_zone" : "Europe/Paris",
+						"min_doc_count" : 1
+					},
+					"aggs" : {
+						"criterion" : {
+							"terms" : {
+								"field" : "feeling_criterion",
+								"size" : 11
+							},
+							"aggs" : {
+								"polarity" : {
+									"terms" : {
+										"field" : "feeling_polarity",
+										"size" : 4
+									}
+								},
+								"reviews_count" : {
+									"cardinality" : {
+										"field" : "review_id"
+									}
+								}
+							}
+						},
+						"reviews_count" : {
+							"cardinality" : {
+								"field" : "review_id"
+							}
+						},
+						"reviews_no_feeling_count" : {
+							"filter" : {
+								"term" : {
+									"ref_calc_value" : 0
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}

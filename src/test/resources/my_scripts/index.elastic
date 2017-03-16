@@ -1,0 +1,233 @@
+{
+	"size" : 0,
+	"query" : {
+		"filtered" : {
+			"query" : {
+				"match_all" : {}
+			},
+			"filter" : {
+				"bool" : {
+					"should" : [{
+							"terms" : {
+								"app_id" : ["<apps>"]
+							}
+						}
+					],
+					"must" : [{
+							"range" : {
+								"review_date" : {
+									"gte" : "<start>",
+									"lte" : "<end>",
+									"format" : "epoch_millis"
+								}
+							}
+						}
+					],
+					"must_not" : []
+				}
+			}
+		}
+	},
+	"aggs" : {
+		"group" : {
+			"filters" : {
+				"filters" : {
+					<first_group_by_os ??
+					// If the first group is a parent application (app with 2 OS) or an application for a specific OS
+
+					"first_group_ios" : {
+						"bool" : {
+							"should" : [{
+									"terms" : {
+										"app_id" : [
+											"<apps_first_group_ios>"
+										]
+									}
+								}
+								<apps_first_group_ios_version ??
+								// If the first group version is unspecified, the content is removed
+								, {
+									"terms" : {
+										"app_verDsion" : [
+											"<apps_first_group_ios_version>"
+										]
+									}
+								}
+								>
+							]
+						}
+					},
+					"first_group_android" : {
+						"bool" : {
+							"should" : [{
+									"terms" : {
+										"app_id" : [
+											"<apps_first_group_android>"
+										]
+									}
+								}
+								<apps_first_group_android_version ??
+								// If the first group version is unspecified, the content is removed
+								, {
+									"terms" : {
+										"app_version" : [
+											"<apps_first_group_android_version>"
+										]
+									}
+								}
+								>
+							]
+						}
+					},
+					
+					::
+					// If no version was specified by OS or it's a group
+					
+					"first_group" : {
+						"bool" : {
+							"should" : [{
+									"terms" : {
+										"app_id" : [
+											"<apps_first_group>"
+										]
+									}
+								}
+								<apps_first_group_version ??
+								// If the first group version is unspecified, the content is removed
+								, {
+									"terms" : {
+										"app_version" : [
+											"<apps_first_group_version>"
+										]
+									}
+								}
+								>
+							]
+						}
+					}
+					
+					>
+					,
+					<second_group_by_os ??
+					// If the second group is a parent application (app with 2 OS) or an application for a specific OS
+					
+					"second_group_ios" : {
+						"bool" : {
+							"should" : [{
+									"terms" : {
+										"app_id" : [
+											"<apps_second_group_ios>"
+										]
+									}
+								}
+								<second_group_ios_version ??
+								// If the second group version is unspecified, the content is removed
+								, {
+									"terms" : {
+										"app_version" : [
+											"<second_group_ios_version>"
+										]
+									}
+								}
+								>
+							]
+						}
+					},
+					"second_group_android" : {
+						"bool" : {
+							"should" : [{
+									"terms" : {
+										"app_id" : [
+											"<apps_second_group_android>"
+										]
+									}
+								}
+								<apps_second_group_android_version ??
+								// If the second group version is unspecified, the content is removed
+								, {
+									"terms" : {
+										"app_version" : [
+											"<apps_second_group_android_version>"
+										]
+									}
+								}
+								>
+							]
+						}
+					}
+					
+					::
+					// If no version was specified by OS or it's a group
+					
+					"second_group" : {
+						"bool" : {
+							"should" : [{
+									"terms" : {
+										"app_id" : [
+											"<apps_second_group>"
+										]
+									}
+								}
+								<second_group_version ??
+								// If the second group version is unspecified, the content is removed
+								, {
+									"terms" : {
+										"app_version" : [
+											"<second_group_version>"
+										]
+									}
+								}
+								>
+							]
+						}
+					}
+					
+					>
+				}
+			},
+			"aggs" : {
+				"date" : {
+					"date_histogram" : {
+						"field" : "review_date",
+						"interval" : "<interval>",
+						"time_zone" : "Europe/Paris",
+						"min_doc_count" : 1
+					},
+					"aggs" : {
+						"criterion" : {
+							"terms" : {
+								"field" : "feeling_criterion",
+								"size" : 11
+							},
+							"aggs" : {
+								"polarity" : {
+									"terms" : {
+										"field" : "feeling_polarity",
+										"size" : 4
+									}
+								},
+								"reviews_count" : {
+									"cardinality" : {
+										"field" : "review_id"
+									}
+								}
+							}
+						},
+						"reviews_count" : {
+							"cardinality" : {
+								"field" : "review_id"
+							}
+						},
+						"reviews_no_feeling_count" : {
+							"filter" : {
+								"term" : {
+									"ref_calc_value" : 0
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
