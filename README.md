@@ -1,4 +1,4 @@
-#utils-template
+# utils-template
 [![Build Status](https://api.travis-ci.org/Gilandel/utils-template.svg?branch=master)](https://travis-ci.org/Gilandel/utils-template)
 [![Codacy Badge](https://api.codacy.com/project/badge/grade/90454c15ecd24ce985b5ee82cb93a558)](https://www.codacy.com/app/gilles/utils-template)
 [![Dependency Status](https://www.versioneye.com/user/projects/58b29b6f7b9e15003a17e544/badge.svg?style=flat)](https://www.versioneye.com/user/projects/58b29b6f7b9e15003a17e544)
@@ -22,7 +22,7 @@ Work progress:
 </dependency>
 ```
 
-##Summary
+## Summary
 
 1. [Summary](#summary)
 2. [Base configuration](#base-configuration)
@@ -32,9 +32,9 @@ Work progress:
 4. [Example with a JSON script](#example-with-a-json-script)
 5. [Example with a custom script](#example-with-a-custom-script)
 
-##Base configuration
+## Base configuration
 
-###Load a single script
+### Load a single script
 
 ```java
 // my_scripts is a classpath directory (example in a Maven project: src/main/resources/my_scripts)
@@ -54,7 +54,7 @@ final StringBuilder builder = loader.get(script, "app.id", "my_best_app");
 // builder => select * from test where id = 'my_best_app'
 ```
 
-###Load multiple scripts
+### Load multiple scripts
 First step, we create an enumeration that will list all scripts used.
 ```java
 public enum EnumScripts implements ScriptsList<EnumScripts> {
@@ -173,8 +173,8 @@ public List<User> loadScript(final String name, final List<Integer> ids) {
 !!!Be careful about code injection!!!
 Some checks can be implement in the template, but never trust parameters, for example in SQL use setParameter method to set unknown variable.
 
-##Example with an SQL script
+## Example with an SQL script
 
-##Example with a JSON script
+## Example with a JSON script
 
-##Example with a custom script
+## Example with a custom script
