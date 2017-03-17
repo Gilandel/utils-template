@@ -146,7 +146,6 @@ public class ScriptsLoaderTest {
 
         File dir = new File("target/my_scripts2");
         assertTrue(dir.isDirectory() || FileSystemUtils.createDirectory(dir));
-        System.out.println(new File("test.sql").getAbsolutePath());
         File file = new File(dir, "test.sql");
         FileUtils.writeFileContent(new StringBuilder("test {test}"), file, StandardCharsets.UTF_8);
 
@@ -217,6 +216,12 @@ public class ScriptsLoaderTest {
         builder = loader.get(script, "test", null);
 
         assertEquals("test toto\ntoto", builder.toString());
+
+        // NULL FILE
+
+        script = loader.init("", StandardCharsets.UTF_8);
+
+        assertNull(loader.get(script, "test", null));
     }
 
     /**
