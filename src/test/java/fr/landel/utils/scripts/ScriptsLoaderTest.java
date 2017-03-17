@@ -133,7 +133,8 @@ public class ScriptsLoaderTest {
 
         builder = loader.get(script, "app.id", "my_best_app");
 
-        assertEquals("-- comment" + SystemProperties.LINE_SEPARATOR + "select * from test where id = 'my_best_app'", builder.toString());
+        assertEquals("-- comment" + SystemProperties.LINE_SEPARATOR.getValue() + "select * from test where id = 'my_best_app'",
+                builder.toString());
 
         // null script
 
