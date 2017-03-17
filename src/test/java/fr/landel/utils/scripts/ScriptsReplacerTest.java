@@ -193,6 +193,35 @@ public class ScriptsReplacerTest {
     }
 
     /**
+     * Test replacer 4
+     */
+    @Test
+    public void replaceTest4() {
+        StringBuilder sb;
+        final Map<String, String> replacements = new HashMap<>();
+        final ScriptsReplacer replacer = new ScriptsReplacer();
+
+        replacer.getTemplate().isRemoveBlankLines();
+
+        final Map<String, String> inputs = new LinkedHashMap<>();
+
+        replacements.put("var2", "'dat'a");
+        inputs.put("{var.iable}", "value");
+
+        try {
+            for (Entry<String, String> input : inputs.entrySet()) {
+                sb = new StringBuilder(input.getKey());
+
+                replacer.replace(sb, replacements);
+
+                fail("Has to throw exception: " + sb.toString());
+            }
+        } catch (IllegalArgumentException e) {
+            LOGGER.info("Expected exception", e);
+        }
+    }
+
+    /**
      * Test new template
      * 
      * @throws IOException

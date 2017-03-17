@@ -18,6 +18,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -32,6 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import fr.landel.utils.assertor.Assertor;
 import fr.landel.utils.commons.StringUtils;
+import fr.landel.utils.io.FileSystemUtils;
 import fr.landel.utils.io.FileUtils;
 import fr.landel.utils.scripts.PatientSearch.Attendance;
 import fr.landel.utils.scripts.PatientSearch.Distance;
@@ -59,6 +61,32 @@ public class ScriptsLoaderTest {
     private static final String PARAM_FIRSTNAME = "firstName";
     private static final String PARAM_BIRTHDAY = "birthday";
     private static final String PARAM_GENDER = "gender";
+
+    /**
+     * Template for scripts
+     */
+    private static final ScriptsTemplate TEMPLATE = new AbstractScriptsTemplate() {
+        @Override
+        protected void init() {
+            this.setExpressionOpen(EXPRESSION_OPEN);
+            this.setExpressionClose(EXPRESSION_CLOSE);
+            this.setBlockOpen(BLOCK_OPEN);
+            this.setBlockClose(BLOCK_CLOSE);
+            this.setOperatorThen(OPERATOR_THEN);
+            this.setOperatorElse(OPERATOR_ELSE);
+            this.setOperatorAnd(OPERATOR_AND);
+            this.setOperatorOr(OPERATOR_OR);
+            this.setOperatorNot(OPERATOR_NOT);
+
+            this.setRemoveComments(Boolean.FALSE);
+            this.setRemoveBlankLines(Boolean.FALSE);
+
+            this.setOneLineCommentOperator(COMMENT_SQL);
+            this.setMultiLineCommentOperators(COMMENT_OPEN, COMMENT_CLOSE);
+
+            this.setChecker(null);
+        }
+    };
 
     private static final Pattern PATTERN_COLUMN = Pattern.compile("\\w+");
 
@@ -90,13 +118,103 @@ public class ScriptsLoaderTest {
      */
     @Test
     public void testSingleScript() throws IOException {
-        final ScriptsLoader loader = new ScriptsLoader("my_scripts");
-        final ScriptsList<?> script = loader.init("test.sql", StandardCharsets.UTF_8);
-        final StringBuilder builder = loader.get(script, "app.id", "my_best_app");
+        ScriptsLoader loader = new ScriptsLoader("my_scripts");
+        ScriptsList<?> script = loader.init("test.sql", StandardCharsets.UTF_8);
+        StringBuilder builder = loader.get(script, "app.id", "my_best_app");
 
         assertEquals("select * from test where id = 'my_best_app'", builder.toString());
 
         assertEquals(1, script.getValues().length);
+
+        // CUSTOM TEMPLATE (keep comments and blank lines)
+
+        loader.getReplacer().setTemplate(TEMPLATE);
+
+        builder = loader.get(script, "app.id", "my_best_app");
+
+        assertEquals("-- comment\r\nselect * from test where id = 'my_best_app'", builder.toString());
+
+        // null script
+
+        ScriptsList<?> script2 = loader.init("", StandardCharsets.UTF_8);
+
+        assertNull(loader.get(script2));
+
+        // no comment and no blank line
+
+        File dir = new File("target/my_scripts2");
+        assertTrue(dir.isDirectory() || FileSystemUtils.createDirectory(dir));
+        System.out.println(new File("test.sql").getAbsolutePath());
+        File file = new File(dir, "test.sql");
+        FileUtils.writeFileContent(new StringBuilder("test {test}"), file, StandardCharsets.UTF_8);
+
+        loader = new ScriptsLoader(dir.getPath());
+        script = loader.init(null, file.getName(), StandardCharsets.UTF_8);
+
+        builder = loader.get(script, "test", "my_best_app");
+
+        assertEquals("test my_best_app", builder.toString());
+
+        // BLANK LINE \r
+
+        FileUtils.writeFileContent(new StringBuilder("test {test}\r\rtoto"), file, StandardCharsets.UTF_8);
+
+        script = loader.init(null, file.getName(), StandardCharsets.UTF_8);
+
+        builder = loader.get(script, "test", "my_best_app");
+
+        assertEquals("test my_best_app\rtoto", builder.toString());
+
+        // BLANK LINE \n
+
+        FileUtils.writeFileContent(new StringBuilder("test {test}\n\ntoto"), file, StandardCharsets.UTF_8);
+
+        script = loader.init(null, file.getName(), StandardCharsets.UTF_8);
+
+        builder = loader.get(script, "test", "my_best_app");
+
+        assertEquals("test my_best_app\ntoto", builder.toString());
+
+        // REMOVE COMMENT \r
+
+        FileUtils.writeFileContent(new StringBuilder("test {test}\r--test\rtoto"), file, StandardCharsets.UTF_8);
+
+        script = loader.init(null, file.getName(), StandardCharsets.UTF_8);
+
+        builder = loader.get(script, "test", "my_best_app");
+
+        assertEquals("test my_best_app\rtoto", builder.toString());
+
+        // REMOVE COMMENT \n
+
+        FileUtils.writeFileContent(new StringBuilder("test {test}\n--test\ntoto"), file, StandardCharsets.UTF_8);
+
+        script = loader.init(null, file.getName(), StandardCharsets.UTF_8);
+
+        builder = loader.get(script, "test", "my_best_app");
+
+        assertEquals("test my_best_app\ntoto", builder.toString());
+
+        // NULL VARIABLE
+
+        FileUtils.writeFileContent(new StringBuilder("test {test ??titi::toto}\n--test\ntoto"), file, StandardCharsets.UTF_8);
+
+        script = loader.init(null, file.getName(), StandardCharsets.UTF_8);
+
+        builder = loader.get(script, "test", null);
+
+        assertEquals("test titi\ntoto", builder.toString());
+
+        // NULL EXPRESSION
+
+        FileUtils.writeFileContent(new StringBuilder("test {? ?titi::toto}{??titi: :toto}{? ?titi: :toto}\n--test\ntoto"), file,
+                StandardCharsets.UTF_8);
+
+        script = loader.init(null, file.getName(), StandardCharsets.UTF_8);
+
+        builder = loader.get(script, "test", null);
+
+        assertEquals("test toto\ntoto", builder.toString());
     }
 
     /**
