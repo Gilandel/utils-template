@@ -31,6 +31,7 @@ Work progress:
 3. [Example with an SQL script](#example-with-an-sql-script)
 4. [Example with a JSON script](#example-with-a-json-script)
 5. [Example with a custom script](#example-with-a-custom-script)
+6. [License](#license)
 
 ## Base configuration
 
@@ -178,3 +179,6 @@ Some checks can be implement in the template, but never trust parameters, for ex
 ## Example with a JSON script
 
 ## Example with a custom script
+
+## License
+See [https://github.com/Gilandel/utils/LICENSE](main project license): Apache License, version 2.0
