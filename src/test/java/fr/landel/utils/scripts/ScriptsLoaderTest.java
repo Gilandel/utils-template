@@ -35,6 +35,7 @@ import fr.landel.utils.assertor.Assertor;
 import fr.landel.utils.commons.StringUtils;
 import fr.landel.utils.io.FileSystemUtils;
 import fr.landel.utils.io.FileUtils;
+import fr.landel.utils.io.SystemProperties;
 import fr.landel.utils.scripts.PatientSearch.Attendance;
 import fr.landel.utils.scripts.PatientSearch.Distance;
 import fr.landel.utils.scripts.PatientSearch.Health;
@@ -132,7 +133,7 @@ public class ScriptsLoaderTest {
 
         builder = loader.get(script, "app.id", "my_best_app");
 
-        assertEquals("-- comment\r\nselect * from test where id = 'my_best_app'", builder.toString());
+        assertEquals("-- comment" + SystemProperties.LINE_SEPARATOR + "select * from test where id = 'my_best_app'", builder.toString());
 
         // null script
 
