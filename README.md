@@ -11,7 +11,7 @@
 Work progress:
 ![Code status](http://vbc3.com/script/progressbar.php?text=Code&progress=100)
 ![Test status](http://vbc3.com/script/progressbar.php?text=Test&progress=100)
-![Benchmark status](http://vbc3.com/script/progressbar.php?text=Benchmark&progress=0)
+![Benchmark status](http://vbc3.com/script/progressbar.php?text=Benchmark&progress=100)
 ![JavaDoc status](http://vbc3.com/script/progressbar.php?text=JavaDoc&progress=100)
 
 ```xml
@@ -381,6 +381,17 @@ multi line comment without end
 
 The replacements:
 ```java
+// Create the script loader
+final ScriptsLoader loader = new ScriptsLoader();
+
+// Init the path and our custom template
+loader.setPath("my_scripts");
+loader.getReplacer().setTemplate(new MyTemplate());
+
+// Init the scripts list
+loader.init(EnumScripts2.values());
+
+// Create the replacements map
 final Map<String, String> replacements = new HashMap<>();
 replacements.put("value1", "v1");
 
