@@ -12,7 +12,7 @@ Work progress:
 ![Code status](http://vbc3.com/script/progressbar.php?text=Code&progress=100)
 ![Test status](http://vbc3.com/script/progressbar.php?text=Test&progress=100)
 ![Benchmark status](http://vbc3.com/script/progressbar.php?text=Benchmark&progress=0)
-![JavaDoc status](http://vbc3.com/script/progressbar.php?text=JavaDoc&progress=90)
+![JavaDoc status](http://vbc3.com/script/progressbar.php?text=JavaDoc&progress=100)
 
 ```xml
 <dependency>
@@ -176,9 +176,222 @@ Some checks can be implement in the template, but never trust parameters, for ex
 
 ## Example with an SQL script
 
+The input script template
+```
+-- Get the name and height of all motorcycles or bikes, following if they contain an engine, with a length inferior to 1500mm
+-- if it's a racing or touring motorbike, get the tire front and rear width, 
+-- if it's a racing bike, get the tire width,
+-- else return -1
+select
+		b.name,
+		s.height,
+		{engine && (racing || touring)??
+			tf.width as front_tire,
+			tr.width as rear_tire
+		::
+			{!engine && racing??
+				t.width,
+				t.width
+			::
+				-1,
+				-1
+			}
+		}
+	from
+	{engine??
+		motorcycle b
+		inner join specification s on b.id=s.fk_vehicule
+		{racing || touring??
+			inner join tire tf on tf.id=s.fk_front_tire
+			inner join tire tr on tr.id=s.fk_rear_tire
+		}
+	::
+		bike b
+		inner join specification s on b.id=s.fk_vehicule
+		{racing??
+			inner join tire t on t.id=s.fk_tire
+		}
+	}
+	where s.length < :length;
+```
+
+The replacements:
+```java
+final Map<String, Object> replacements = new HashMap<>();
+replacements.put("engine", true); // the value doesn't count, here engine is not replaced in the script, so the value is unused
+replacements.put("racing", "competition");
+
+// we inject the replacement of my variable
+final StringBuilder builder = loader.get(script, replacements);
+```
+
+The result:
+```sql
+select
+		b.name,
+		s.height,
+			tf.width as front_tire,
+			tr.width as rear_tire
+	from
+		motorcycle b
+		inner join specification s on b.id=s.fk_vehicule
+			inner join tire tf on tf.id=s.fk_front_tire
+			inner join tire tr on tr.id=s.fk_rear_tire
+	where s.length < :length;
+```
+
 ## Example with a JSON script
 
+The script template:
+```json
+{
+	"size" : 0,
+	"query" : {
+		"filtered" : {
+			"query" : {
+				"match_all" : {}
+			},
+			"filter" : {
+				"bool" : {
+					"should" : [{
+							"terms" : {
+								"app_id" : ["<apps>"]
+							}
+						}
+					],
+					"must" : [{
+							"range" : {
+								"review_date" : {
+									"gte" : "<start>",
+									"lte" : "<end>",
+									"format" : "epoch_millis"
+								}
+							}
+						}
+					],
+					"must_not" : []
+				}
+			}
+		}
+	}
+}
+```
+
+The replacements:
+```java
+final Map<String, Object> replacements = new HashMap<>();
+replacements.put("apps", "my_app_id");
+replacements.put("start", startDate.getTime());
+replacements.put("end", endDate.getTime());
+
+final ScriptsLoader loader = new ScriptsLoader();
+
+loader.setPath("my_scripts");
+loader.getReplacer().setTemplate(ScriptsTemplate.TEMPLATE_JSON);
+
+loader.init(EnumScripts.MY_SCRIPT);
+
+StringBuilder builder = loader.get(EnumScripts.MY_SCRIPT, replacements);
+```
+
+The result:
+```json
+{
+	"size" : 0,
+	"query" : {
+		"filtered" : {
+			"query" : {
+				"match_all" : {}
+			},
+			"filter" : {
+				"bool" : {
+					"should" : [{
+							"terms" : {
+								"app_id" : ["my_app_id"]
+							}
+						}
+					],
+					"must" : [{
+							"range" : {
+								"review_date" : {
+									"gte" : "1489833298121",
+									"lte" : "1489833299132",
+									"format" : "epoch_millis"
+								}
+							}
+						}
+					],
+					"must_not" : []
+				}
+			}
+		}
+	}
+}
+```
+
 ## Example with a custom script
+
+The template:
+```java
+public class MyTemplate extends AbstractScriptsTemplate {
+	@Override
+	protected void init() {
+		this.setExpressionOpen("$");
+		this.setExpressionClose("£");
+		this.setBlockOpen("\\");
+		this.setBlockClose("/");
+		this.setOperatorThen("THEN");
+		this.setOperatorElse("ELSE");
+		this.setOperatorAnd("AND");
+		this.setOperatorOr("OR");
+		this.setOperatorNot("NOT");
+
+		this.setRemoveComments(Boolean.TRUE);
+		this.setRemoveBlankLines(Boolean.TRUE);
+		
+		this.setOneLineCommentOperator("#");
+		this.setMultiLineCommentOperators("#_", "_#");
+		
+		this.setChecker((input) -> {
+		    Assertor.that(input).not().contains('=').orElseThrow("the script cannot contains the '=' character");
+		});
+	}
+}
+```
+
+The input script template
+```
+#_
+multi line comment
+_#
+
+$ value1 AND \value2 OR value3/ THEN
+	# comment line
+	12
+ELSE
+	$value1£
+£
+
+# empty variable
+$£
+
+#_
+multi line comment without end
+```
+
+The replacements:
+```java
+final Map<String, String> replacements = new HashMap<>();
+replacements.put("value1", "v1");
+
+// we inject the replacement of my variable
+final StringBuilder builder = loader.get(script, replacements);
+```
+
+The result:
+```
+	v1
+```
 
 ## License
 See [main project license](https://github.com/Gilandel/utils/LICENSE): Apache License, version 2.0

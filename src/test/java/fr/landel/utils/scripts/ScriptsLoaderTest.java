@@ -246,6 +246,16 @@ public class ScriptsLoaderTest {
         assertNull(this.scriptsLoader.get(null, null));
         assertNull(this.scriptsLoader.get(null, null, null));
 
+        // SQL TEMPLATE
+        final Map<String, Object> replacements = new HashMap<>();
+        replacements.put("engine", true);
+        replacements.put("racing", "competition");
+
+        content = this.scriptsLoader.get(EnumScripts.BIKES, replacements);
+        assertNotNull(content);
+        StringBuilder expected = FileUtils.getFileContent(PATH + "bikes.expected.sql");
+        assertTrue(Assertor.that(content).isEqualIgnoreLineReturns(expected).isOK());
+
         // JSON TEMPLATE
         final ScriptsLoader loader = new ScriptsLoader();
 
@@ -257,7 +267,7 @@ public class ScriptsLoaderTest {
         loader.init(EnumScripts.INDEX_AGGS);
 
         StringBuilder builder = loader.get(EnumScripts.INDEX_AGGS, "apps", "my_app_id");
-        StringBuilder expected = FileUtils.getFileContent(PATH + "index.expected.elastic");
+        expected = FileUtils.getFileContent(PATH + "index.expected.elastic");
 
         assertTrue(Assertor.that(builder).isEqualIgnoreLineReturns(expected).isOK());
     }

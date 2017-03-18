@@ -40,6 +40,11 @@ public enum EnumScripts implements ScriptsList<EnumScripts> {
     PATIENTS_SEARCH("patientsSearch.sql"),
 
     /**
+     * Select bikes by engine and tire type
+     */
+    BIKES("bikes.sql"),
+
+    /**
      * Select patient search by sector or unit (count and paginated select)
      */
     INDEX_AGGS("index.elastic", StandardCharsets.UTF_8);
