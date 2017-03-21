@@ -5,6 +5,10 @@
 [![codecov.io](https://codecov.io/github/Gilandel/utils-template/coverage.svg?branch=master)](https://codecov.io/github/Gilandel/utils-template?branch=master)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/fr.landel.utils/utils-template/badge.svg)](https://maven-badges.herokuapp.com/maven-central/fr.landel.utils/utils-template)
 
+[![Tokei LoC](https://tokei.rs/b1/github/Gilandel/utils-template)](https://github.com/Aaronepower/tokei)
+[![Tokei NoFiles](https://tokei.rs/b1/github/Gilandel/utils-template?category=files)](https://github.com/Aaronepower/tokei)
+[![Tokei LoComments](https://tokei.rs/b1/github/Gilandel/utils-template?category=comments)](https://github.com/Aaronepower/tokei)
+
 [![codecov.io tree](https://codecov.io/gh/Gilandel/utils-template/branch/master/graphs/tree.svg)](https://codecov.io/gh/Gilandel/utils-template/branch/master)
 [![codecov.io sunburst](https://codecov.io/gh/Gilandel/utils-template/branch/master/graphs/sunburst.svg)](https://codecov.io/gh/Gilandel/utils-template/branch/master)
 
@@ -25,13 +29,13 @@ Work progress:
 ## Summary
 
 1. [Summary](#summary)
-2. [Base configuration](#base-configuration)
-  1. [Load a single script](#load-a-single-script)
-  2. [Load multiple scripts](#load-multiple-scripts)
-3. [Example with an SQL script](#example-with-an-sql-script)
-4. [Example with a JSON script](#example-with-a-json-script)
-5. [Example with a custom script](#example-with-a-custom-script)
-6. [License](#license)
+1. [Base configuration](#base-configuration)
+   1. [Load a single script](#load-a-single-script)
+   1. [Load multiple scripts](#load-multiple-scripts)
+1. [Example with an SQL script](#example-with-an-sql-script)
+1. [Example with a JSON script](#example-with-a-json-script)
+1. [Example with a custom script](#example-with-a-custom-script)
+1. [License](#license)
 
 ## Base configuration
 
