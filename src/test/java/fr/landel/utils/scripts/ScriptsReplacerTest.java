@@ -26,8 +26,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.landel.utils.commons.expect.Expect;
-
 /**
  * Check scripts replacer
  *
@@ -35,7 +33,7 @@ import fr.landel.utils.commons.expect.Expect;
  * @author Gilles
  *
  */
-public class ScriptsReplacerTest {
+public class ScriptsReplacerTest extends AbstractTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ScriptsReplacerTest.class);
 
@@ -254,7 +252,7 @@ public class ScriptsReplacerTest {
         assertEquals("\tv1", content.toString());
 
         replacements.put("value3", "v=3");
-        Expect.exception(() -> {
+        assertException(() -> {
             loader.get(EnumScripts2.TEST_UNIX, replacements);
             fail();
         }, IllegalArgumentException.class, "the script cannot contains the '=' character");
