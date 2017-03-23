@@ -20,9 +20,9 @@ Work progress:
 
 ```xml
 <dependency>
-	<groupId>fr.landel.utils</groupId>
-	<artifactId>utils-template</artifactId>
-	<version>1.0.0</version>
+    <groupId>fr.landel.utils</groupId>
+    <artifactId>utils-template</artifactId>
+    <version>1.0.0</version>
 </dependency>
 ```
 
@@ -108,43 +108,43 @@ After, we create a class that init the script loader.
 @ApplicationScoped
 public class ScriptsInitializer {
 
-	private static final String PATH = "my_scripts";
-	
-	@Produce
-	public ScriptsLoader getLoader() {
-		final ScriptsLoader scriptsLoader = new ScriptsLoader(PATH);
-		scriptsLoader.init(EnumScripts.values());
-		return scriptsLoader;
-	}
+    private static final String PATH = "my_scripts";
+    
+    @Produce
+    public ScriptsLoader getLoader() {
+        final ScriptsLoader scriptsLoader = new ScriptsLoader(PATH);
+        scriptsLoader.init(EnumScripts.values());
+        return scriptsLoader;
+    }
 }
 
 // OR in Spring
 @Configuration
 public class ScriptsInitializer {
 
-	private static final String PATH = "my_scripts";
-	
-	@Bean
-	public ScriptsLoader getLoader() {
-		final ScriptsLoader scriptsLoader = new ScriptsLoader(PATH);
-		scriptsLoader.init(EnumScripts.values());
-		return scriptsLoader;
-	}
+    private static final String PATH = "my_scripts";
+    
+    @Bean
+    public ScriptsLoader getLoader() {
+        final ScriptsLoader scriptsLoader = new ScriptsLoader(PATH);
+        scriptsLoader.init(EnumScripts.values());
+        return scriptsLoader;
+    }
 }
 
 // OR through a simple singleton
 public class ScriptsInitializer {
 
-	private static final String PATH = "my_scripts";
-	private static ScriptsLoader scriptsLoader;
-	
-	public static ScriptsLoader getLoader() {
-		if (scriptsLoader == null) {
-			scriptsLoader = new ScriptsLoader(PATH);
-			scriptsLoader.init(EnumScripts.values());
-		}
-		return scriptsLoader;
-	}
+    private static final String PATH = "my_scripts";
+    private static ScriptsLoader scriptsLoader;
+    
+    public static ScriptsLoader getLoader() {
+        if (scriptsLoader == null) {
+            scriptsLoader = new ScriptsLoader(PATH);
+            scriptsLoader.init(EnumScripts.values());
+        }
+        return scriptsLoader;
+    }
 }
 ```
 
@@ -163,14 +163,14 @@ private ScriptsLoader scriptsLoader;
 private ScriptsLoader scriptsLoader = ScriptsInitializer.getLoader();
 
 public List<User> loadScript(final String name, final List<Integer> ids) {
-	final Map<String, String> replacements = new HashMap<>();
-	
-	replacements.put("name", "toto");
-	replacements.put("multipleIds", CollectionUtils.isNotEmpty(ids));
+    final Map<String, String> replacements = new HashMap<>();
+    
+    replacements.put("name", "toto");
+    replacements.put("multipleIds", CollectionUtils.isNotEmpty(ids));
 
-	final String query = scriptsLoader.get(EnumScripts.LIST_USERS, replacements).toString();
-	
-	...
+    final String query = scriptsLoader.get(EnumScripts.LIST_USERS, replacements).toString();
+    
+    ...
 }
 
 ```
@@ -187,36 +187,36 @@ The input script template
 -- if it's a racing bike, get the tire width,
 -- else return -1
 select
-		b.name,
-		s.height,
-		{engine && (racing || touring)??
-			tf.width as front_tire,
-			tr.width as rear_tire
-		::
-			{!engine && racing??
-				t.width,
-				t.width
-			::
-				-1,
-				-1
-			}
-		}
-	from
-	{engine??
-		motorcycle b
-		inner join specification s on b.id=s.fk_vehicule
-		{racing || touring??
-			inner join tire tf on tf.id=s.fk_front_tire
-			inner join tire tr on tr.id=s.fk_rear_tire
-		}
-	::
-		bike b
-		inner join specification s on b.id=s.fk_vehicule
-		{racing??
-			inner join tire t on t.id=s.fk_tire
-		}
-	}
-	where s.length < :length;
+        b.name,
+        s.height,
+        {engine && (racing || touring)??
+            tf.width as front_tire,
+            tr.width as rear_tire
+        ::
+            {!engine && racing??
+                t.width,
+                t.width
+            ::
+                -1,
+                -1
+            }
+        }
+    from
+    {engine??
+        motorcycle b
+        inner join specification s on b.id=s.fk_vehicule
+        {racing || touring??
+            inner join tire tf on tf.id=s.fk_front_tire
+            inner join tire tr on tr.id=s.fk_rear_tire
+        }
+    ::
+        bike b
+        inner join specification s on b.id=s.fk_vehicule
+        {racing??
+            inner join tire t on t.id=s.fk_tire
+        }
+    }
+    where s.length < :length;
 ```
 
 The replacements:
@@ -232,16 +232,16 @@ final StringBuilder builder = loader.get(script, replacements);
 The result:
 ```sql
 select
-		b.name,
-		s.height,
-			tf.width as front_tire,
-			tr.width as rear_tire
-	from
-		motorcycle b
-		inner join specification s on b.id=s.fk_vehicule
-			inner join tire tf on tf.id=s.fk_front_tire
-			inner join tire tr on tr.id=s.fk_rear_tire
-	where s.length < :length;
+        b.name,
+        s.height,
+            tf.width as front_tire,
+            tr.width as rear_tire
+    from
+        motorcycle b
+        inner join specification s on b.id=s.fk_vehicule
+            inner join tire tf on tf.id=s.fk_front_tire
+            inner join tire tr on tr.id=s.fk_rear_tire
+    where s.length < :length;
 ```
 
 ## Example with a JSON script
@@ -249,35 +249,35 @@ select
 The script template:
 ```json
 {
-	"size" : 0,
-	"query" : {
-		"filtered" : {
-			"query" : {
-				"match_all" : {}
-			},
-			"filter" : {
-				"bool" : {
-					"should" : [{
-							"terms" : {
-								"app_id" : ["<apps>"]
-							}
-						}
-					],
-					"must" : [{
-							"range" : {
-								"review_date" : {
-									"gte" : "<start>",
-									"lte" : "<end>",
-									"format" : "epoch_millis"
-								}
-							}
-						}
-					],
-					"must_not" : []
-				}
-			}
-		}
-	}
+    "size" : 0,
+    "query" : {
+        "filtered" : {
+            "query" : {
+                "match_all" : {}
+            },
+            "filter" : {
+                "bool" : {
+                    "should" : [{
+                            "terms" : {
+                                "app_id" : ["<apps>"]
+                            }
+                        }
+                    ],
+                    "must" : [{
+                            "range" : {
+                                "review_date" : {
+                                    "gte" : "<start>",
+                                    "lte" : "<end>",
+                                    "format" : "epoch_millis"
+                                }
+                            }
+                        }
+                    ],
+                    "must_not" : []
+                }
+            }
+        }
+    }
 }
 ```
 
@@ -301,35 +301,35 @@ StringBuilder builder = loader.get(EnumScripts.MY_SCRIPT, replacements);
 The result:
 ```json
 {
-	"size" : 0,
-	"query" : {
-		"filtered" : {
-			"query" : {
-				"match_all" : {}
-			},
-			"filter" : {
-				"bool" : {
-					"should" : [{
-							"terms" : {
-								"app_id" : ["my_app_id"]
-							}
-						}
-					],
-					"must" : [{
-							"range" : {
-								"review_date" : {
-									"gte" : "1489833298121",
-									"lte" : "1489833299132",
-									"format" : "epoch_millis"
-								}
-							}
-						}
-					],
-					"must_not" : []
-				}
-			}
-		}
-	}
+    "size" : 0,
+    "query" : {
+        "filtered" : {
+            "query" : {
+                "match_all" : {}
+            },
+            "filter" : {
+                "bool" : {
+                    "should" : [{
+                            "terms" : {
+                                "app_id" : ["my_app_id"]
+                            }
+                        }
+                    ],
+                    "must" : [{
+                            "range" : {
+                                "review_date" : {
+                                    "gte" : "1489833298121",
+                                    "lte" : "1489833299132",
+                                    "format" : "epoch_millis"
+                                }
+                            }
+                        }
+                    ],
+                    "must_not" : []
+                }
+            }
+        }
+    }
 }
 ```
 
@@ -338,28 +338,28 @@ The result:
 The template:
 ```java
 public class MyTemplate extends AbstractScriptsTemplate {
-	@Override
-	protected void init() {
-		this.setExpressionOpen("$");
-		this.setExpressionClose("£");
-		this.setBlockOpen("\\");
-		this.setBlockClose("/");
-		this.setOperatorThen("THEN");
-		this.setOperatorElse("ELSE");
-		this.setOperatorAnd("AND");
-		this.setOperatorOr("OR");
-		this.setOperatorNot("NOT");
+    @Override
+    protected void init() {
+        this.setExpressionOpen("$");
+        this.setExpressionClose("£");
+        this.setBlockOpen("\\");
+        this.setBlockClose("/");
+        this.setOperatorThen("THEN");
+        this.setOperatorElse("ELSE");
+        this.setOperatorAnd("AND");
+        this.setOperatorOr("OR");
+        this.setOperatorNot("NOT");
 
-		this.setRemoveComments(Boolean.TRUE);
-		this.setRemoveBlankLines(Boolean.TRUE);
-		
-		this.setOneLineCommentOperator("#");
-		this.setMultiLineCommentOperators("#_", "_#");
-		
-		this.setChecker((input) -> {
-		    Assertor.that(input).not().contains('=').orElseThrow("the script cannot contains the '=' character");
-		});
-	}
+        this.setRemoveComments(Boolean.TRUE);
+        this.setRemoveBlankLines(Boolean.TRUE);
+        
+        this.setOneLineCommentOperator("#");
+        this.setMultiLineCommentOperators("#_", "_#");
+        
+        this.setChecker((input) -> {
+            Assertor.that(input).not().contains('=').orElseThrow("the script cannot contains the '=' character");
+        });
+    }
 }
 ```
 
@@ -370,10 +370,10 @@ multi line comment
 _#
 
 $ value1 AND \value2 OR value3/ THEN
-	# comment line
-	12
+    # comment line
+    12
 ELSE
-	$value1£
+    $value1£
 £
 
 # empty variable
@@ -405,7 +405,7 @@ final StringBuilder builder = loader.get(script, replacements);
 
 The result:
 ```
-	v1
+    v1
 ```
 
 ## License
