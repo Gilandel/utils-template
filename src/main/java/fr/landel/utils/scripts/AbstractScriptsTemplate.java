@@ -40,9 +40,7 @@ public abstract class AbstractScriptsTemplate implements ScriptsTemplate {
     private ConsumerThrowable<String, IllegalArgumentException> checker;
 
     /**
-     * 
      * Constructor
-     *
      */
     protected AbstractScriptsTemplate() {
         this.init();

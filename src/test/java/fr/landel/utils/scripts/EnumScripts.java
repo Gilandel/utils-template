@@ -53,7 +53,6 @@ public enum EnumScripts implements ScriptsList<EnumScripts> {
     private final Charset charset;
 
     /**
-     * 
      * Constructor
      *
      * @param name
@@ -67,7 +66,6 @@ public enum EnumScripts implements ScriptsList<EnumScripts> {
     }
 
     /**
-     * 
      * Constructor
      *
      * @param name
