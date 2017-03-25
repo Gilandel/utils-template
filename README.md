@@ -4,6 +4,7 @@
 [![Dependency Status](https://www.versioneye.com/user/projects/58b29b6f7b9e15003a17e544/badge.svg?style=flat)](https://www.versioneye.com/user/projects/58b29b6f7b9e15003a17e544)
 [![codecov.io](https://codecov.io/github/Gilandel/utils-template/coverage.svg?branch=master)](https://codecov.io/github/Gilandel/utils-template?branch=master)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/fr.landel.utils/utils-template/badge.svg)](https://maven-badges.herokuapp.com/maven-central/fr.landel.utils/utils-template)
+[![Javadocs](http://www.javadoc.io/badge/fr.landel.utils/utils-template.svg)](http://www.javadoc.io/doc/fr.landel.utils/utils-template)
 
 [![Tokei LoC](https://tokei.rs/b1/github/Gilandel/utils-template)](https://github.com/Aaronepower/tokei)
 [![Tokei NoFiles](https://tokei.rs/b1/github/Gilandel/utils-template?category=files)](https://github.com/Aaronepower/tokei)
@@ -409,4 +410,4 @@ The result:
 ```
 
 ## License
-See [main project license](https://github.com/Gilandel/utils/LICENSE): Apache License, version 2.0
+Apache License, version 2.0
