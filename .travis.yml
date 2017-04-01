@@ -13,8 +13,9 @@ cache:
   directories:
   - $HOME/.ivy2/cache
   - $HOME/.m2
-  # Deployer SBT binary
-  - $HOME/.sbt_bin
+  # Deployer binaries
+  - $HOME/sbt
+  - $HOME/ccr
 
 before_cache:
   # Cleanup the cached directories to avoid unnecessary cache updates
