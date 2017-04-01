@@ -17,12 +17,16 @@ before_cache:
 
 before_install:
   - pip install --user codecov
+  - https://www.jpm4j.org/install/script | sudo sh
+
+install:
+  - sudo jpm install com.codacy:codacy-coverage-reporter:assembly
 
 script: mvn clean compile test cobertura:cobertura
 
 after_success:
   - codecov
-  - curl $DEPLOYER_URL/codacity-java-cobertura.sh | bash
+  - codacy-coverage-reporter -l Java -r target/cobertura/coverage.xml
   - curl $DEPLOYER_URL/deploy.sh | bash
 
 notifications:
