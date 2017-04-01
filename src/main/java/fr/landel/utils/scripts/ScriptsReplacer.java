@@ -180,21 +180,26 @@ public class ScriptsReplacer {
     private void replaceSimples(final StringBuilder sb, final String key, final String value) {
         String simple;
 
+        final int valueLen = value.length();
+        final int startLen = this.template.getExpressionOpen().length();
+        final int stopLen = this.template.getExpressionClose().length();
+
         // get first
         int index = sb.indexOf(this.template.getExpressionOpen());
-        int indexStop = sb.indexOf(this.template.getExpressionClose(), index);
+        int indexStop = sb.indexOf(this.template.getExpressionClose(), index + startLen);
 
         for (; index > -1 && indexStop > -1;) {
-            simple = sb.substring(index + 1, indexStop);
+            simple = sb.substring(index + startLen, indexStop);
 
             if (key.equals(simple.trim())) {
-                sb.replace(index, indexStop + 1, value);
+                sb.replace(index, indexStop + stopLen, value);
+                index += valueLen;
             }
 
             // get next
-            index = sb.indexOf(this.template.getExpressionOpen(), index + 1);
+            index = sb.indexOf(this.template.getExpressionOpen(), index + startLen);
             if (index > -1) {
-                indexStop = sb.indexOf(this.template.getExpressionClose(), index);
+                indexStop = sb.indexOf(this.template.getExpressionClose(), index + startLen);
             }
         }
     }
@@ -204,24 +209,27 @@ public class ScriptsReplacer {
         int indexValid;
         int indexDefault;
 
+        final int startLen = this.template.getExpressionOpen().length();
+        final int stopLen = this.template.getExpressionClose().length();
+
         // get first
         int index = sb.indexOf(this.template.getExpressionOpen());
-        int indexStop = sb.indexOf(this.template.getExpressionClose(), index);
+        int indexStop = sb.indexOf(this.template.getExpressionClose(), index + startLen);
 
         for (; index > -1 && indexStop > -1;) {
-            simple = sb.substring(index + 1, indexStop);
+            simple = sb.substring(index + startLen, indexStop);
 
             indexValid = simple.indexOf(this.template.getOperatorThen());
             indexDefault = simple.indexOf(this.template.getOperatorElse());
 
             if (indexValid == -1 && indexDefault == -1) {
-                sb.replace(index, indexStop + 1, "");
+                sb.replace(index, indexStop + stopLen, "");
             }
 
             // get next
             index = sb.indexOf(this.template.getExpressionOpen(), index + 1);
             if (index > -1) {
-                indexStop = sb.indexOf(this.template.getExpressionClose(), index);
+                indexStop = sb.indexOf(this.template.getExpressionClose(), index + startLen);
             }
         }
     }
@@ -234,6 +242,10 @@ public class ScriptsReplacer {
         String expression;
         String value;
         String defaultValue;
+
+        final int stopLen = this.template.getExpressionClose().length();
+        final int operatorLen = this.template.getOperatorThen().length();
+        final int elseLen = this.template.getOperatorElse().length();
 
         for (bounds = this.findDeepestCondition(sb, this.template.getExpressionOpen(),
                 this.template.getExpressionClose()); bounds != null; bounds = this.findDeepestCondition(sb,
@@ -250,21 +262,21 @@ public class ScriptsReplacer {
             if (indexValid > -1) {
                 expression = condition.substring(0, indexValid);
                 if (indexDefault > -1) {
-                    value = condition.substring(indexValid + this.template.getOperatorThen().length(), indexDefault);
-                    defaultValue = condition.substring(indexDefault + this.template.getOperatorElse().length());
+                    value = condition.substring(indexValid + operatorLen, indexDefault);
+                    defaultValue = condition.substring(indexDefault + elseLen);
                 } else {
-                    value = condition.substring(indexValid + this.template.getOperatorThen().length());
+                    value = condition.substring(indexValid + operatorLen);
                 }
             } else if (indexDefault > -1) {
                 expression = condition.substring(0, indexDefault);
-                defaultValue = condition.substring(indexDefault + this.template.getOperatorElse().length());
+                defaultValue = condition.substring(indexDefault + elseLen);
             }
 
             if (expression != null) {
-                sb.replace(bounds.getLeft() - 1, bounds.getRight() + 1,
+                sb.replace(bounds.getLeft() - 1, bounds.getRight() + stopLen,
                         this.replaceCondition(replacements, expression, value, defaultValue));
             } else {
-                sb.replace(bounds.getLeft() - 1, bounds.getRight() + 1, "");
+                sb.replace(bounds.getLeft() - 1, bounds.getRight() + stopLen, "");
             }
         }
     }
@@ -272,16 +284,18 @@ public class ScriptsReplacer {
     private Pair<Integer, Integer> findDeepestCondition(final StringBuilder sb, final String inStr, final String outStr) {
         Pair<Integer, Integer> bounds = null;
 
+        final int inStrLen = inStr.length();
+
         // get first
         int index = sb.indexOf(inStr);
-        int indexStop = sb.indexOf(outStr, index + inStr.length());
+        int indexStop = sb.indexOf(outStr, index + inStrLen);
 
         if (index > -1 && indexStop > -1) {
             for (; index > -1 && index < indexStop;) {
-                bounds = new MutablePair<Integer, Integer>(index + inStr.length(), indexStop);
+                bounds = new MutablePair<Integer, Integer>(index + inStrLen, indexStop);
 
                 // get next
-                index = sb.indexOf(inStr, index + inStr.length());
+                index = sb.indexOf(inStr, index + inStrLen);
             }
         }
 
@@ -342,6 +356,9 @@ public class ScriptsReplacer {
         int indexAnd;
         int indexOr;
 
+        final int opAndLen = this.template.getOperatorAnd().length();
+        final int opOrLen = this.template.getOperatorOr().length();
+
         indexAnd = condition.indexOf(this.template.getOperatorAnd());
         indexOr = condition.indexOf(this.template.getOperatorOr());
         if (indexAnd > -1 || indexOr > -1) {
@@ -349,11 +366,11 @@ public class ScriptsReplacer {
 
                 if (this.checkOperators(indexAnd, indexOr)) {
                     variable = condition.substring(previousIndex, indexAnd).trim();
-                    previousIndex = indexAnd + this.template.getOperatorAnd().length();
+                    previousIndex = indexAnd + opAndLen;
                     currentOr = false;
                 } else if (this.checkOperators(indexOr, indexAnd)) {
                     variable = condition.substring(previousIndex, indexOr).trim();
-                    previousIndex = indexOr + this.template.getOperatorOr().length();
+                    previousIndex = indexOr + opOrLen;
                     currentOr = true;
                 }
 

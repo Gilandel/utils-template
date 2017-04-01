@@ -26,8 +26,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.landel.utils.commons.expect.Expect;
-
 /**
  * Check scripts replacer
  *
@@ -35,7 +33,7 @@ import fr.landel.utils.commons.expect.Expect;
  * @author Gilles
  *
  */
-public class ScriptsReplacerTest {
+public class ScriptsReplacerTest extends AbstractTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ScriptsReplacerTest.class);
 
@@ -193,6 +191,35 @@ public class ScriptsReplacerTest {
     }
 
     /**
+     * Test replacer 4
+     */
+    @Test
+    public void replaceTest4() {
+        StringBuilder sb;
+        final Map<String, String> replacements = new HashMap<>();
+        final ScriptsReplacer replacer = new ScriptsReplacer();
+
+        replacer.getTemplate().isRemoveBlankLines();
+
+        final Map<String, String> inputs = new LinkedHashMap<>();
+
+        replacements.put("var2", "'dat'a");
+        inputs.put("{var.iable}", "value");
+
+        try {
+            for (Entry<String, String> input : inputs.entrySet()) {
+                sb = new StringBuilder(input.getKey());
+
+                replacer.replace(sb, replacements);
+
+                fail("Has to throw exception: " + sb.toString());
+            }
+        } catch (IllegalArgumentException e) {
+            LOGGER.info("Expected exception", e);
+        }
+    }
+
+    /**
      * Test new template
      * 
      * @throws IOException
@@ -225,7 +252,7 @@ public class ScriptsReplacerTest {
         assertEquals("\tv1", content.toString());
 
         replacements.put("value3", "v=3");
-        Expect.exception(() -> {
+        assertException(() -> {
             loader.get(EnumScripts2.TEST_UNIX, replacements);
             fail();
         }, IllegalArgumentException.class, "the script cannot contains the '=' character");

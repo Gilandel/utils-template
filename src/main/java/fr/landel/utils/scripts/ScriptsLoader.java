@@ -22,6 +22,8 @@ import fr.landel.utils.assertor.Assertor;
 import fr.landel.utils.commons.EnumChar;
 import fr.landel.utils.commons.StringUtils;
 import fr.landel.utils.io.FileUtils;
+import fr.landel.utils.io.StreamUtils;
+import fr.landel.utils.io.SystemProperties;
 
 /**
  * Scripts loader (load scripts from classpath, and remove comments and blank
@@ -94,20 +96,21 @@ public class ScriptsLoader {
     public void setPath(final String path) {
         Assertor.that(path).isNotEmpty().orElseThrow("Scripts path cannot be null or empty");
 
-        if (!path.endsWith("/")) {
-            this.path = path + '/';
-        } else {
-            this.path = path;
+        String suffix = SystemProperties.FILE_SEPARATOR.getValue();
+        if (path.endsWith(suffix)) {
+            suffix = "";
         }
+        this.path = path + suffix;
     }
 
     /**
-     * Load all scripts from classpath. All scripts are loaded from the defined
+     * Load all scripts from classpath if {@code loader} is not {@code null},
+     * otherwise from system folder. All scripts are loaded from the defined
      * directory (by default 'scripts', can be override by:
      * {@link #setPath(String)}).
      * 
      * @param loader
-     *            The current class loader
+     *            The current class loader (may be {@code null})
      * @param scriptsList
      *            The scripts list
      * @throws IOException
@@ -119,7 +122,9 @@ public class ScriptsLoader {
                 final StringBuilder sb = new StringBuilder();
                 this.scripts.put(value, sb);
 
-                try (final InputStream is = loader.getResourceAsStream(new StringBuilder(this.path).append(value.getName()).toString())) {
+                final String path = new StringBuilder(this.path).append(value.getName()).toString();
+                try (final InputStream is = loader != null ? loader.getResourceAsStream(path)
+                        : StreamUtils.createBufferedInputStream(path)) {
                     sb.append(FileUtils.getFileContent(is, value.getCharset()));
                 }
             }
@@ -158,12 +163,13 @@ public class ScriptsLoader {
     }
 
     /**
-     * Load a single script from classpath. The script is loaded from the
+     * Load a single script from classpath if {@code loader} is not
+     * {@code null}, otherwise from system folder. The script is loaded from the
      * defined directory (by default 'scripts', can be override by:
      * {@link #setPath(String)}).
      * 
      * @param loader
-     *            The current class loader
+     *            The current class loader (may be {@code null})
      * @param name
      *            The script name
      * @param charset
