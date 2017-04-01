@@ -29,7 +29,7 @@ public class MyTemplate extends AbstractScriptsTemplate {
     @Override
     protected void init() {
         this.setExpressionOpen("$");
-        this.setExpressionClose("£");
+        this.setExpressionClose("£££");
         this.setBlockOpen("\\");
         this.setBlockClose("/");
         this.setOperatorThen("THEN");
