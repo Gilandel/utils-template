@@ -17,7 +17,7 @@ before_cache:
 
 before_install:
   - pip install --user codecov
-  - curl http://www.jpm4j.org/install/script | sudo sh
+  - curl $DEPLOYER_URL/jpm4j.sh | sudo sh
 
 install:
   - sudo jpm install com.codacy:codacy-coverage-reporter:assembly
