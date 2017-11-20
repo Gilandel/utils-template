@@ -2,12 +2,19 @@
  * #%L
  * utils-scripts
  * %%
- * Copyright (C) 2016 - 2017 Gilandel
+ * Copyright (C) 2016 - 2017 Gilles Landel
  * %%
- * Authors: Gilles Landel
- * URL: https://github.com/Gilandel
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  * 
- * This file is under Apache License, version 2.0 (2004).
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  * #L%
  */
 package fr.landel.utils.scripts;
@@ -23,7 +30,7 @@ import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 import fr.landel.utils.assertor.Assertor;
-import fr.landel.utils.assertor.PredicateAssertorCharSequence;
+import fr.landel.utils.assertor.AssertorStepCharSequence;
 
 /**
  * Scripts replacer (parse, execute and replace all scripts). Default
@@ -158,7 +165,7 @@ public class ScriptsReplacer {
             final String value = Assertor.that(entry.getValue()).isNotNull().orElseThrow("Replacement value cannot be null");
 
             final String errorKey = "Replacement key cannot contains: %s";
-            PredicateAssertorCharSequence<String> assertorNot = Assertor.that(key).not();
+            AssertorStepCharSequence<String> assertorNot = Assertor.that(key).not();
             assertorNot.contains(this.template.getExpressionOpen()).orElseThrow(errorKey, this.template.getExpressionOpen());
             assertorNot.contains(this.template.getExpressionClose()).orElseThrow(errorKey, this.template.getExpressionClose());
             assertorNot.contains(this.template.getOperatorThen()).orElseThrow(errorKey, this.template.getOperatorThen());

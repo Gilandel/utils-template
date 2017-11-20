@@ -2,12 +2,19 @@
  * #%L
  * utils-scripts
  * %%
- * Copyright (C) 2016 - 2017 Gilandel
+ * Copyright (C) 2016 - 2017 Gilles Landel
  * %%
- * Authors: Gilles Landel
- * URL: https://github.com/Gilandel
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  * 
- * This file is under Apache License, version 2.0 (2004).
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  * #L%
  */
 package fr.landel.utils.scripts;
@@ -22,7 +29,7 @@ import fr.landel.utils.assertor.Assertor;
 import fr.landel.utils.commons.EnumChar;
 import fr.landel.utils.commons.StringUtils;
 import fr.landel.utils.io.FileUtils;
-import fr.landel.utils.io.StreamUtils;
+import fr.landel.utils.io.IOStreamUtils;
 import fr.landel.utils.io.SystemProperties;
 
 /**
@@ -124,7 +131,7 @@ public class ScriptsLoader {
 
                 final String path = new StringBuilder(this.path).append(value.getName()).toString();
                 try (final InputStream is = loader != null ? loader.getResourceAsStream(path)
-                        : StreamUtils.createBufferedInputStream(path)) {
+                        : IOStreamUtils.createBufferedInputStream(path)) {
                     sb.append(FileUtils.getFileContent(is, value.getCharset()));
                 }
             }
