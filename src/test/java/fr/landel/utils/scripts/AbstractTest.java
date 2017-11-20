@@ -32,7 +32,7 @@ import java.util.regex.Pattern;
 
 import org.junit.ComparisonFailure;
 
-import fr.landel.utils.assertor.ParameterAssertor;
+import fr.landel.utils.assertor.commons.ParameterAssertor;
 import fr.landel.utils.commons.expect.Expect;
 import fr.landel.utils.commons.function.ThrowableSupplier;
 import fr.landel.utils.commons.function.TriFunction;

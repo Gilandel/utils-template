@@ -30,7 +30,7 @@ import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 import fr.landel.utils.assertor.Assertor;
-import fr.landel.utils.assertor.PredicateAssertorCharSequence;
+import fr.landel.utils.assertor.AssertorStepCharSequence;
 
 /**
  * Scripts replacer (parse, execute and replace all scripts). Default
@@ -165,7 +165,7 @@ public class ScriptsReplacer {
             final String value = Assertor.that(entry.getValue()).isNotNull().orElseThrow("Replacement value cannot be null");
 
             final String errorKey = "Replacement key cannot contains: %s";
-            PredicateAssertorCharSequence<String> assertorNot = Assertor.that(key).not();
+            AssertorStepCharSequence<String> assertorNot = Assertor.that(key).not();
             assertorNot.contains(this.template.getExpressionOpen()).orElseThrow(errorKey, this.template.getExpressionOpen());
             assertorNot.contains(this.template.getExpressionClose()).orElseThrow(errorKey, this.template.getExpressionClose());
             assertorNot.contains(this.template.getOperatorThen()).orElseThrow(errorKey, this.template.getOperatorThen());
