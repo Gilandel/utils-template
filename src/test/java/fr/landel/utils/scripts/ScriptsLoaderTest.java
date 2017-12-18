@@ -437,7 +437,7 @@ public class ScriptsLoaderTest {
             replacements.put("statusNormal", Boolean.TRUE.toString());
         } else if (Health.GOOD.equals(patientMultiSearch.getHealth())) {
             replacements.put("statusGood", Boolean.TRUE.toString());
-        } else if (patientMultiSearch.getStatus() != null && !Distance.UNKNOWN.equals(patientMultiSearch.getStatus())) {
+        } else if (patientMultiSearch.getStatus() != null && !Distance.UNKNOWN.equals(patientMultiSearch.getDistance())) {
             replacements.put(PARAM_STATUS, patientMultiSearch.getStatus().name());
         }
     }

@@ -35,7 +35,8 @@
 		<gpg.home>${env.HOME}/build/Gilandel/${project.artifactId}/distribution</gpg.home>
 		
 		<!-- Dependencies version -->
-		<utils-io.version>1.0.2</utils-io.version>
+		<utils-commons.version>1.0.16</utils-commons.version>
+		<utils-io.version>1.0.3</utils-io.version>
 		<utils-microbenchmark.version>1.0.5</utils-microbenchmark.version>
 	</properties>
   
@@ -106,6 +107,11 @@
 	</build>
 
 	<dependencies>
+		<dependency>
+			<groupId>fr.landel.utils</groupId>
+			<artifactId>utils-commons</artifactId>
+			<version>${utils-commons.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>fr.landel.utils</groupId>
 			<artifactId>utils-io</artifactId>

@@ -30,8 +30,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Check scripts replacer
@@ -42,14 +40,11 @@ import org.slf4j.LoggerFactory;
  */
 public class ScriptsReplacerTest extends AbstractTest {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ScriptsReplacerTest.class);
-
     /**
      * Test replacer
      */
     @Test
     public void replaceTest() {
-        StringBuilder sb;
         final Map<String, String> replacements = new HashMap<>();
         final ScriptsReplacer replacer = new ScriptsReplacer();
 
@@ -125,20 +120,18 @@ public class ScriptsReplacerTest extends AbstractTest {
 
         int i = 0;
         for (Entry<String, String> input : inputs.entrySet()) {
-            sb = new StringBuilder(input.getKey());
+            final StringBuilder sb = new StringBuilder(input.getKey());
 
             if (i < inputWithoutExceptions) {
                 replacer.replace(sb, replacements);
 
                 assertEquals("input: " + input.getKey(), input.getValue(), sb.toString());
-            } else {
-                try {
-                    replacer.replace(sb, replacements);
-
-                    fail("Has to throw exception: " + sb.toString());
-                } catch (IllegalArgumentException e) {
-                    LOGGER.info("Expected exception", e);
-                }
+            } else if (i == 0) {
+                assertException(() -> replacer.replace(sb, replacements), IllegalArgumentException.class,
+                        "The count of { doesn't match the count of }, input:    { var.iable");
+            } else if (i == 1) {
+                assertException(() -> replacer.replace(sb, replacements), IllegalArgumentException.class,
+                        "The count of { doesn't match the count of }, input:    { var.iable ");
             }
 
             i++;
@@ -167,7 +160,7 @@ public class ScriptsReplacerTest extends AbstractTest {
                 fail("Has to throw exception: " + sb.toString());
             }
         } catch (IllegalArgumentException e) {
-            LOGGER.info("Expected exception", e);
+            assertEquals("Replacement value has to contain only pairs of: '", e.getMessage());
         }
     }
 
@@ -193,7 +186,7 @@ public class ScriptsReplacerTest extends AbstractTest {
                 fail("Has to throw exception: " + sb.toString());
             }
         } catch (IllegalArgumentException e) {
-            LOGGER.info("Expected exception", e);
+            assertEquals("Replacement value has to contain only group of pairs of: '", e.getMessage());
         }
     }
 
@@ -222,7 +215,7 @@ public class ScriptsReplacerTest extends AbstractTest {
                 fail("Has to throw exception: " + sb.toString());
             }
         } catch (IllegalArgumentException e) {
-            LOGGER.info("Expected exception", e);
+            assertEquals("Replacement value has to contain only group of pairs of: '", e.getMessage());
         }
     }
 

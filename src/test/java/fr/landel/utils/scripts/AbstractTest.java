@@ -28,6 +28,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import org.junit.ComparisonFailure;
@@ -136,6 +137,32 @@ public abstract class AbstractTest {
             final Pattern messagePattern) {
 
         Expect.exception(consumer, expectedException, messagePattern, JUNIT_ERROR);
+    }
+
+    /**
+     * Check that the consumed code raise the specified exception, also check
+     * the message.
+     * 
+     * <pre>
+     * assertException(() -&gt; {
+     *     // throw new IllegalArgumentException("parameter cannot be null");
+     *     getMyType(null);
+     * }, IllegalArgumentException.class, "parameter cannot be null");
+     * </pre>
+     * 
+     * @param consumer
+     *            The consumer (required, not null)
+     * @param expectedException
+     *            The expected exception type (required, not null)
+     * @param messageChecker
+     *            The message checker
+     * @param <T>
+     *            The generic expected exception type
+     */
+    public static <T extends Throwable> void assertException(final ThrowableSupplier<Throwable> consumer, final Class<T> expectedException,
+            final Predicate<String> messageChecker) {
+
+        Expect.exception(consumer, expectedException, messageChecker, JUNIT_ERROR);
     }
 
     /**
