@@ -2,7 +2,7 @@
  * #%L
  * utils-scripts
  * %%
- * Copyright (C) 2016 - 2017 Gilles Landel
+ * Copyright (C) 2016 - 2018 Gilles Landel
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,8 @@ public class MyTemplate extends AbstractScriptsTemplate {
     protected void init() {
         this.setExpressionOpen("$");
         this.setExpressionClose("£££");
+        this.setVariableOpen("$");
+        this.setVariableClose("£££");
         this.setBlockOpen("\\");
         this.setBlockClose("/");
         this.setOperatorThen("THEN");

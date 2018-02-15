@@ -2,7 +2,7 @@
  * #%L
  * utils-scripts
  * %%
- * Copyright (C) 2016 - 2017 Gilles Landel
+ * Copyright (C) 2016 - 2018 Gilles Landel
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,14 +24,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Check scripts replacer
@@ -42,14 +41,11 @@ import org.slf4j.LoggerFactory;
  */
 public class ScriptsReplacerTest extends AbstractTest {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ScriptsReplacerTest.class);
-
     /**
      * Test replacer
      */
     @Test
     public void replaceTest() {
-        StringBuilder sb;
         final Map<String, String> replacements = new HashMap<>();
         final ScriptsReplacer replacer = new ScriptsReplacer();
 
@@ -125,20 +121,18 @@ public class ScriptsReplacerTest extends AbstractTest {
 
         int i = 0;
         for (Entry<String, String> input : inputs.entrySet()) {
-            sb = new StringBuilder(input.getKey());
+            final StringBuilder sb = new StringBuilder(input.getKey());
 
             if (i < inputWithoutExceptions) {
                 replacer.replace(sb, replacements);
 
                 assertEquals("input: " + input.getKey(), input.getValue(), sb.toString());
-            } else {
-                try {
-                    replacer.replace(sb, replacements);
-
-                    fail("Has to throw exception: " + sb.toString());
-                } catch (IllegalArgumentException e) {
-                    LOGGER.info("Expected exception", e);
-                }
+            } else if (i == 0) {
+                assertException(() -> replacer.replace(sb, replacements), IllegalArgumentException.class,
+                        "The count of { doesn't match the count of }, input:    { var.iable");
+            } else if (i == 1) {
+                assertException(() -> replacer.replace(sb, replacements), IllegalArgumentException.class,
+                        "The count of { doesn't match the count of }, input:    { var.iable ");
             }
 
             i++;
@@ -167,7 +161,7 @@ public class ScriptsReplacerTest extends AbstractTest {
                 fail("Has to throw exception: " + sb.toString());
             }
         } catch (IllegalArgumentException e) {
-            LOGGER.info("Expected exception", e);
+            assertEquals("Replacement value has to contain only pairs of: '", e.getMessage());
         }
     }
 
@@ -193,7 +187,7 @@ public class ScriptsReplacerTest extends AbstractTest {
                 fail("Has to throw exception: " + sb.toString());
             }
         } catch (IllegalArgumentException e) {
-            LOGGER.info("Expected exception", e);
+            assertEquals("Replacement value has to contain only group of pairs of: '", e.getMessage());
         }
     }
 
@@ -222,7 +216,7 @@ public class ScriptsReplacerTest extends AbstractTest {
                 fail("Has to throw exception: " + sb.toString());
             }
         } catch (IllegalArgumentException e) {
-            LOGGER.info("Expected exception", e);
+            assertEquals("Replacement value has to contain only group of pairs of: '", e.getMessage());
         }
     }
 
@@ -263,5 +257,17 @@ public class ScriptsReplacerTest extends AbstractTest {
             loader.get(EnumScripts2.TEST_UNIX, replacements);
             fail();
         }, IllegalArgumentException.class, "the script cannot contains the '=' character");
+
+        ScriptsReplacer replacer = new ScriptsReplacer();
+
+        StringBuilder in = new StringBuilder("{ a ??{a}::%s}");
+        replacer.replace(in, Collections.singletonMap("a", "b"));
+        assertEquals("b", in.toString());
+
+        in = new StringBuilder("{a??{a}::%s}");
+        replacer.replace(in, Collections.emptyMap());
+        assertEquals("%s", in.toString());
+
+        assertEquals("b", replacer.replace("{a??{a}::%s}", Collections.singletonMap("a", "b")));
     }
 }

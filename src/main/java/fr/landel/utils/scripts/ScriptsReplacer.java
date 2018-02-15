@@ -2,7 +2,7 @@
  * #%L
  * utils-scripts
  * %%
- * Copyright (C) 2016 - 2017 Gilles Landel
+ * Copyright (C) 2016 - 2018 Gilles Landel
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,6 +54,18 @@ public class ScriptsReplacer {
     }
 
     /**
+     * Constructor
+     * 
+     * @param template
+     *            the template to set
+     */
+    public ScriptsReplacer(final ScriptsTemplate template) {
+        super();
+
+        this.template = template;
+    }
+
+    /**
      * @return the template
      */
     public ScriptsTemplate getTemplate() {
@@ -66,6 +78,50 @@ public class ScriptsReplacer {
      */
     public void setTemplate(final ScriptsTemplate template) {
         this.template = template;
+    }
+
+    /**
+     * Replace all keys by their values in the input string.<br>
+     * <br>
+     * Supported operators: or=||, and=&amp;&amp;, not=!<br>
+     * Parenthesis are supported in condition<br>
+     * Sub-conditions can be added in value and default<br>
+     * <br>
+     * Supported format (with replacements: key1=var.name, value1=data,
+     * key2=var2, value2=vx):
+     * 
+     * <pre>
+     * - {var.name} will be replaced by "data" without quotes
+     * - {var.name??value} will be replaced by "value" without quotes
+     * - {var.name::default} will be replaced by "data" without quotes
+     * - {var.name&amp;&amp;var2::default} will be replaced by "datavx" without quotes
+     * - {var2 &amp;&amp; var.name::default} will be replaced by "vxdata" without quotes
+     * - {var2 || !var.name::default} will be replaced by "vx" without quotes
+     * - {unknown.var} will be replaced by an empty string
+     * - {unknown.var::default} will be replaced by "default" without quotes
+     * - {var.name??var='{var.name}'} will be replaced by "var='data'" without quotes
+     * - {unknown.var??var='{var.name}'} will be replaced en empty string
+     * - {unknown.var??var='{var.name}'::default} will be replaced by "default" without quotes
+     * </pre>
+     * 
+     * @param content
+     *            The content to replace
+     * @param replacements
+     *            the replacements (entry: key=value)
+     * @param <V>
+     *            The type of values
+     * @return the content replaced
+     * @throws IllegalArgumentException
+     *             If number of brackets open and close doesn't match. If
+     *             brackets are found in key replacement or in value
+     *             replacement. If replacement value hasn't pairs of single
+     *             quote (avoid some SQL injections but not all, parameters have
+     *             to be checked)
+     */
+    public <V> String replace(final String content, final Map<String, V> replacements) throws IllegalArgumentException {
+        final StringBuilder builder = new StringBuilder(content);
+        this.replace(builder, replacements);
+        return builder.toString();
     }
 
     /**
@@ -168,6 +224,8 @@ public class ScriptsReplacer {
             AssertorStepCharSequence<String> assertorNot = Assertor.that(key).not();
             assertorNot.contains(this.template.getExpressionOpen()).orElseThrow(errorKey, this.template.getExpressionOpen());
             assertorNot.contains(this.template.getExpressionClose()).orElseThrow(errorKey, this.template.getExpressionClose());
+            assertorNot.contains(this.template.getVariableOpen()).orElseThrow(errorKey, this.template.getVariableOpen());
+            assertorNot.contains(this.template.getVariableClose()).orElseThrow(errorKey, this.template.getVariableClose());
             assertorNot.contains(this.template.getOperatorThen()).orElseThrow(errorKey, this.template.getOperatorThen());
             assertorNot.contains(this.template.getOperatorElse()).orElseThrow(errorKey, this.template.getOperatorElse());
 
@@ -175,6 +233,8 @@ public class ScriptsReplacer {
             assertorNot = Assertor.that(value).not();
             assertorNot.contains(this.template.getExpressionOpen()).orElseThrow(errorValue, this.template.getExpressionOpen());
             assertorNot.contains(this.template.getExpressionClose()).orElseThrow(errorValue, this.template.getExpressionClose());
+            assertorNot.contains(this.template.getVariableOpen()).orElseThrow(errorValue, this.template.getVariableOpen());
+            assertorNot.contains(this.template.getVariableClose()).orElseThrow(errorValue, this.template.getVariableClose());
             assertorNot.contains(this.template.getOperatorThen()).orElseThrow(errorValue, this.template.getOperatorThen());
             assertorNot.contains(this.template.getOperatorElse()).orElseThrow(errorValue, this.template.getOperatorElse());
 
@@ -188,12 +248,12 @@ public class ScriptsReplacer {
         String simple;
 
         final int valueLen = value.length();
-        final int startLen = this.template.getExpressionOpen().length();
-        final int stopLen = this.template.getExpressionClose().length();
+        final int startLen = this.template.getVariableOpen().length();
+        final int stopLen = this.template.getVariableClose().length();
 
         // get first
-        int index = sb.indexOf(this.template.getExpressionOpen());
-        int indexStop = sb.indexOf(this.template.getExpressionClose(), index + startLen);
+        int index = sb.indexOf(this.template.getVariableOpen());
+        int indexStop = sb.indexOf(this.template.getVariableClose(), index + startLen);
 
         for (; index > -1 && indexStop > -1;) {
             simple = sb.substring(index + startLen, indexStop);
@@ -204,9 +264,9 @@ public class ScriptsReplacer {
             }
 
             // get next
-            index = sb.indexOf(this.template.getExpressionOpen(), index + startLen);
+            index = sb.indexOf(this.template.getVariableOpen(), index + startLen);
             if (index > -1) {
-                indexStop = sb.indexOf(this.template.getExpressionClose(), index + startLen);
+                indexStop = sb.indexOf(this.template.getVariableClose(), index + startLen);
             }
         }
     }
@@ -216,12 +276,12 @@ public class ScriptsReplacer {
         int indexValid;
         int indexDefault;
 
-        final int startLen = this.template.getExpressionOpen().length();
-        final int stopLen = this.template.getExpressionClose().length();
+        final int startLen = this.template.getVariableOpen().length();
+        final int stopLen = this.template.getVariableClose().length();
 
         // get first
-        int index = sb.indexOf(this.template.getExpressionOpen());
-        int indexStop = sb.indexOf(this.template.getExpressionClose(), index + startLen);
+        int index = sb.indexOf(this.template.getVariableOpen());
+        int indexStop = sb.indexOf(this.template.getVariableClose(), index + startLen);
 
         for (; index > -1 && indexStop > -1;) {
             simple = sb.substring(index + startLen, indexStop);
@@ -234,9 +294,9 @@ public class ScriptsReplacer {
             }
 
             // get next
-            index = sb.indexOf(this.template.getExpressionOpen(), index + 1);
+            index = sb.indexOf(this.template.getVariableOpen(), index + 1);
             if (index > -1) {
-                indexStop = sb.indexOf(this.template.getExpressionClose(), index + startLen);
+                indexStop = sb.indexOf(this.template.getVariableClose(), index + startLen);
             }
         }
     }

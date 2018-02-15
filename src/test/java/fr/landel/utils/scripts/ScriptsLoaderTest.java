@@ -2,7 +2,7 @@
  * #%L
  * utils-scripts
  * %%
- * Copyright (C) 2016 - 2017 Gilles Landel
+ * Copyright (C) 2016 - 2018 Gilles Landel
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,6 +78,8 @@ public class ScriptsLoaderTest {
         protected void init() {
             this.setExpressionOpen(EXPRESSION_OPEN);
             this.setExpressionClose(EXPRESSION_CLOSE);
+            this.setVariableOpen(EXPRESSION_OPEN);
+            this.setVariableClose(EXPRESSION_CLOSE);
             this.setBlockOpen(BLOCK_OPEN);
             this.setBlockClose(BLOCK_CLOSE);
             this.setOperatorThen(OPERATOR_THEN);
@@ -127,6 +129,8 @@ public class ScriptsLoaderTest {
     @Test
     public void testSingleScript() throws IOException {
         ScriptsLoader loader = new ScriptsLoader("my_scripts");
+        loader = new ScriptsLoader("my_scripts" + SystemProperties.FILE_SEPARATOR.getValue());
+
         ScriptsList<?> script = loader.init("test.sql", StandardCharsets.UTF_8);
         StringBuilder builder = loader.get(script, "app.id", "my_best_app");
 
@@ -265,8 +269,8 @@ public class ScriptsLoaderTest {
         assertEquals("select * from test where id = 'app_id' ", content.toString());
 
         assertNull(this.scriptsLoader.get(null));
-        assertNull(this.scriptsLoader.get(null, null));
-        assertNull(this.scriptsLoader.get(null, null, null));
+        assertNull(this.scriptsLoader.get((ScriptsList<?>) null, null));
+        assertNull(this.scriptsLoader.get((ScriptsList<?>) null, null, null));
 
         // SQL TEMPLATE
         final Map<String, Object> replacements = new HashMap<>();
@@ -437,7 +441,7 @@ public class ScriptsLoaderTest {
             replacements.put("statusNormal", Boolean.TRUE.toString());
         } else if (Health.GOOD.equals(patientMultiSearch.getHealth())) {
             replacements.put("statusGood", Boolean.TRUE.toString());
-        } else if (patientMultiSearch.getStatus() != null && !Distance.UNKNOWN.equals(patientMultiSearch.getStatus())) {
+        } else if (patientMultiSearch.getStatus() != null && !Distance.UNKNOWN.equals(patientMultiSearch.getDistance())) {
             replacements.put(PARAM_STATUS, patientMultiSearch.getStatus().name());
         }
     }
