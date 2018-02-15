@@ -267,5 +267,7 @@ public class ScriptsReplacerTest extends AbstractTest {
         in = new StringBuilder("{a??{a}::%s}");
         replacer.replace(in, Collections.emptyMap());
         assertEquals("%s", in.toString());
+
+        assertEquals("b", replacer.replace("{a??{a}::%s}", Collections.singletonMap("a", "b")));
     }
 }

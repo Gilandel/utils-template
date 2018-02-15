@@ -47,9 +47,8 @@ Work progress:
 ```java
 ScriptsReplacer replacer = new ScriptsReplacer();
 
-StringBuilder builder = new StringBuilder("{ a ??{a}::%s}");
-replacer.replace(builder, Collections.singletonMap("a", "b"));
-// builder => b
+String result = replacer.replace("{ a ??{a}::%s}", Collections.singletonMap("a", "b"));
+// result => b
 ```
 
 ### Load a single script

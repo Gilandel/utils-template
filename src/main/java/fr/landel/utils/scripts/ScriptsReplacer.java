@@ -81,6 +81,50 @@ public class ScriptsReplacer {
     }
 
     /**
+     * Replace all keys by their values in the input string.<br>
+     * <br>
+     * Supported operators: or=||, and=&amp;&amp;, not=!<br>
+     * Parenthesis are supported in condition<br>
+     * Sub-conditions can be added in value and default<br>
+     * <br>
+     * Supported format (with replacements: key1=var.name, value1=data,
+     * key2=var2, value2=vx):
+     * 
+     * <pre>
+     * - {var.name} will be replaced by "data" without quotes
+     * - {var.name??value} will be replaced by "value" without quotes
+     * - {var.name::default} will be replaced by "data" without quotes
+     * - {var.name&amp;&amp;var2::default} will be replaced by "datavx" without quotes
+     * - {var2 &amp;&amp; var.name::default} will be replaced by "vxdata" without quotes
+     * - {var2 || !var.name::default} will be replaced by "vx" without quotes
+     * - {unknown.var} will be replaced by an empty string
+     * - {unknown.var::default} will be replaced by "default" without quotes
+     * - {var.name??var='{var.name}'} will be replaced by "var='data'" without quotes
+     * - {unknown.var??var='{var.name}'} will be replaced en empty string
+     * - {unknown.var??var='{var.name}'::default} will be replaced by "default" without quotes
+     * </pre>
+     * 
+     * @param content
+     *            The content to replace
+     * @param replacements
+     *            the replacements (entry: key=value)
+     * @param <V>
+     *            The type of values
+     * @return the content replaced
+     * @throws IllegalArgumentException
+     *             If number of brackets open and close doesn't match. If
+     *             brackets are found in key replacement or in value
+     *             replacement. If replacement value hasn't pairs of single
+     *             quote (avoid some SQL injections but not all, parameters have
+     *             to be checked)
+     */
+    public <V> String replace(final String content, final Map<String, V> replacements) throws IllegalArgumentException {
+        final StringBuilder builder = new StringBuilder(content);
+        this.replace(builder, replacements);
+        return builder.toString();
+    }
+
+    /**
      * Replace all keys by their values in the input string builder.<br>
      * <br>
      * Supported operators: or=||, and=&amp;&amp;, not=!<br>
