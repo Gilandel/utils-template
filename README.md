@@ -23,7 +23,7 @@ Work progress:
 <dependency>
     <groupId>fr.landel.utils</groupId>
     <artifactId>utils-template</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
 </dependency>
 ```
 
@@ -31,14 +31,26 @@ Work progress:
 
 1. [Summary](#summary)
 1. [Base configuration](#base-configuration)
+   1. [Simple replacements](#simple-replacements)
    1. [Load a single script](#load-a-single-script)
    1. [Load multiple scripts](#load-multiple-scripts)
 1. [Example with an SQL script](#example-with-an-sql-script)
 1. [Example with a JSON script](#example-with-a-json-script)
 1. [Example with a custom script](#example-with-a-custom-script)
+1. [Changelog](#changelog)
 1. [License](#license)
 
 ## Base configuration
+
+### Simple replacements
+
+```java
+ScriptsReplacer replacer = new ScriptsReplacer();
+
+StringBuilder builder = new StringBuilder("{ a ??{a}::%s}");
+replacer.replace(builder, Collections.singletonMap("a", "b"));
+// builder => b
+```
 
 ### Load a single script
 
@@ -166,7 +178,7 @@ private ScriptsLoader scriptsLoader = ScriptsInitializer.getLoader();
 public List<User> loadScript(final String name, final List<Integer> ids) {
     final Map<String, String> replacements = new HashMap<>();
     
-    replacements.put("name", "toto");
+   	replacements.put("name", "toto");
     replacements.put("multipleIds", CollectionUtils.isNotEmpty(ids));
 
     final String query = scriptsLoader.get(EnumScripts.LIST_USERS, replacements).toString();
@@ -408,6 +420,10 @@ The result:
 ```
     v1
 ```
+
+## Changelog
+### 1.0.3 - 2018-02-15
+- Add: variable tags to customize replacer template
 
 ## License
 Apache License, version 2.0
