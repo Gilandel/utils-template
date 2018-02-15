@@ -155,6 +155,8 @@ public interface ScriptsTemplate {
         protected void init() {
             this.setExpressionOpen(EXPRESSION_OPEN);
             this.setExpressionClose(EXPRESSION_CLOSE);
+            this.setVariableOpen(EXPRESSION_OPEN);
+            this.setVariableClose(EXPRESSION_CLOSE);
             this.setBlockOpen(BLOCK_OPEN);
             this.setBlockClose(BLOCK_CLOSE);
             this.setOperatorThen(OPERATOR_THEN);
@@ -187,6 +189,8 @@ public interface ScriptsTemplate {
         protected void init() {
             this.setExpressionOpen("<");
             this.setExpressionClose(">");
+            this.setVariableOpen("<");
+            this.setVariableClose(">");
             this.setBlockOpen(BLOCK_OPEN);
             this.setBlockClose(BLOCK_CLOSE);
             this.setOperatorThen(OPERATOR_THEN);
@@ -224,6 +228,16 @@ public interface ScriptsTemplate {
      * @return the expressionClose
      */
     String getExpressionClose();
+
+    /**
+     * @return the variableOpen
+     */
+    String getVariableOpen();
+
+    /**
+     * @return the variableClose
+     */
+    String getVariableClose();
 
     /**
      * @return the blockOpen

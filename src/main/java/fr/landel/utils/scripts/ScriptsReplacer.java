@@ -54,6 +54,18 @@ public class ScriptsReplacer {
     }
 
     /**
+     * Constructor
+     * 
+     * @param template
+     *            the template to set
+     */
+    public ScriptsReplacer(final ScriptsTemplate template) {
+        super();
+
+        this.template = template;
+    }
+
+    /**
      * @return the template
      */
     public ScriptsTemplate getTemplate() {
@@ -168,6 +180,8 @@ public class ScriptsReplacer {
             AssertorStepCharSequence<String> assertorNot = Assertor.that(key).not();
             assertorNot.contains(this.template.getExpressionOpen()).orElseThrow(errorKey, this.template.getExpressionOpen());
             assertorNot.contains(this.template.getExpressionClose()).orElseThrow(errorKey, this.template.getExpressionClose());
+            assertorNot.contains(this.template.getVariableOpen()).orElseThrow(errorKey, this.template.getVariableOpen());
+            assertorNot.contains(this.template.getVariableClose()).orElseThrow(errorKey, this.template.getVariableClose());
             assertorNot.contains(this.template.getOperatorThen()).orElseThrow(errorKey, this.template.getOperatorThen());
             assertorNot.contains(this.template.getOperatorElse()).orElseThrow(errorKey, this.template.getOperatorElse());
 
@@ -175,6 +189,8 @@ public class ScriptsReplacer {
             assertorNot = Assertor.that(value).not();
             assertorNot.contains(this.template.getExpressionOpen()).orElseThrow(errorValue, this.template.getExpressionOpen());
             assertorNot.contains(this.template.getExpressionClose()).orElseThrow(errorValue, this.template.getExpressionClose());
+            assertorNot.contains(this.template.getVariableOpen()).orElseThrow(errorValue, this.template.getVariableOpen());
+            assertorNot.contains(this.template.getVariableClose()).orElseThrow(errorValue, this.template.getVariableClose());
             assertorNot.contains(this.template.getOperatorThen()).orElseThrow(errorValue, this.template.getOperatorThen());
             assertorNot.contains(this.template.getOperatorElse()).orElseThrow(errorValue, this.template.getOperatorElse());
 
@@ -188,12 +204,12 @@ public class ScriptsReplacer {
         String simple;
 
         final int valueLen = value.length();
-        final int startLen = this.template.getExpressionOpen().length();
-        final int stopLen = this.template.getExpressionClose().length();
+        final int startLen = this.template.getVariableOpen().length();
+        final int stopLen = this.template.getVariableClose().length();
 
         // get first
-        int index = sb.indexOf(this.template.getExpressionOpen());
-        int indexStop = sb.indexOf(this.template.getExpressionClose(), index + startLen);
+        int index = sb.indexOf(this.template.getVariableOpen());
+        int indexStop = sb.indexOf(this.template.getVariableClose(), index + startLen);
 
         for (; index > -1 && indexStop > -1;) {
             simple = sb.substring(index + startLen, indexStop);
@@ -204,9 +220,9 @@ public class ScriptsReplacer {
             }
 
             // get next
-            index = sb.indexOf(this.template.getExpressionOpen(), index + startLen);
+            index = sb.indexOf(this.template.getVariableOpen(), index + startLen);
             if (index > -1) {
-                indexStop = sb.indexOf(this.template.getExpressionClose(), index + startLen);
+                indexStop = sb.indexOf(this.template.getVariableClose(), index + startLen);
             }
         }
     }
@@ -216,12 +232,12 @@ public class ScriptsReplacer {
         int indexValid;
         int indexDefault;
 
-        final int startLen = this.template.getExpressionOpen().length();
-        final int stopLen = this.template.getExpressionClose().length();
+        final int startLen = this.template.getVariableOpen().length();
+        final int stopLen = this.template.getVariableClose().length();
 
         // get first
-        int index = sb.indexOf(this.template.getExpressionOpen());
-        int indexStop = sb.indexOf(this.template.getExpressionClose(), index + startLen);
+        int index = sb.indexOf(this.template.getVariableOpen());
+        int indexStop = sb.indexOf(this.template.getVariableClose(), index + startLen);
 
         for (; index > -1 && indexStop > -1;) {
             simple = sb.substring(index + startLen, indexStop);
@@ -234,9 +250,9 @@ public class ScriptsReplacer {
             }
 
             // get next
-            index = sb.indexOf(this.template.getExpressionOpen(), index + 1);
+            index = sb.indexOf(this.template.getVariableOpen(), index + 1);
             if (index > -1) {
-                indexStop = sb.indexOf(this.template.getExpressionClose(), index + startLen);
+                indexStop = sb.indexOf(this.template.getVariableClose(), index + startLen);
             }
         }
     }

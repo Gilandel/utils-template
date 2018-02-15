@@ -24,6 +24,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -256,5 +257,15 @@ public class ScriptsReplacerTest extends AbstractTest {
             loader.get(EnumScripts2.TEST_UNIX, replacements);
             fail();
         }, IllegalArgumentException.class, "the script cannot contains the '=' character");
+
+        ScriptsReplacer replacer = new ScriptsReplacer();
+
+        StringBuilder in = new StringBuilder("{ a ??{a}::%s}");
+        replacer.replace(in, Collections.singletonMap("a", "b"));
+        assertEquals("b", in.toString());
+
+        in = new StringBuilder("{a??{a}::%s}");
+        replacer.replace(in, Collections.emptyMap());
+        assertEquals("%s", in.toString());
     }
 }

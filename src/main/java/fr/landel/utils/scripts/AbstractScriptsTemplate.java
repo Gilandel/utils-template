@@ -32,6 +32,8 @@ public abstract class AbstractScriptsTemplate implements ScriptsTemplate {
 
     private String expressionOpen;
     private String expressionClose;
+    private String variableOpen;
+    private String variableClose;
     private String blockOpen;
     private String blockClose;
     private String operatorThen;
@@ -76,6 +78,16 @@ public abstract class AbstractScriptsTemplate implements ScriptsTemplate {
     @Override
     public String getExpressionClose() {
         return this.expressionClose;
+    }
+
+    @Override
+    public String getVariableOpen() {
+        return this.variableOpen;
+    }
+
+    @Override
+    public String getVariableClose() {
+        return this.variableClose;
     }
 
     @Override
@@ -168,6 +180,22 @@ public abstract class AbstractScriptsTemplate implements ScriptsTemplate {
      */
     protected void setExpressionClose(final String expressionClose) {
         this.expressionClose = expressionClose;
+    }
+
+    /**
+     * @param variableOpen
+     *            the variableOpen to set
+     */
+    protected void setVariableOpen(final String variableOpen) {
+        this.variableOpen = variableOpen;
+    }
+
+    /**
+     * @param variableClose
+     *            the variableClose to set
+     */
+    protected void setVariableClose(final String variableClose) {
+        this.variableClose = variableClose;
     }
 
     /**

@@ -37,6 +37,8 @@ public class MyTemplate extends AbstractScriptsTemplate {
     protected void init() {
         this.setExpressionOpen("$");
         this.setExpressionClose("£££");
+        this.setVariableOpen("$");
+        this.setVariableClose("£££");
         this.setBlockOpen("\\");
         this.setBlockClose("/");
         this.setOperatorThen("THEN");

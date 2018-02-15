@@ -78,6 +78,8 @@ public class ScriptsLoaderTest {
         protected void init() {
             this.setExpressionOpen(EXPRESSION_OPEN);
             this.setExpressionClose(EXPRESSION_CLOSE);
+            this.setVariableOpen(EXPRESSION_OPEN);
+            this.setVariableClose(EXPRESSION_CLOSE);
             this.setBlockOpen(BLOCK_OPEN);
             this.setBlockClose(BLOCK_CLOSE);
             this.setOperatorThen(OPERATOR_THEN);
@@ -127,6 +129,8 @@ public class ScriptsLoaderTest {
     @Test
     public void testSingleScript() throws IOException {
         ScriptsLoader loader = new ScriptsLoader("my_scripts");
+        loader = new ScriptsLoader("my_scripts" + SystemProperties.FILE_SEPARATOR.getValue());
+
         ScriptsList<?> script = loader.init("test.sql", StandardCharsets.UTF_8);
         StringBuilder builder = loader.get(script, "app.id", "my_best_app");
 
@@ -265,8 +269,8 @@ public class ScriptsLoaderTest {
         assertEquals("select * from test where id = 'app_id' ", content.toString());
 
         assertNull(this.scriptsLoader.get(null));
-        assertNull(this.scriptsLoader.get(null, null));
-        assertNull(this.scriptsLoader.get(null, null, null));
+        assertNull(this.scriptsLoader.get((ScriptsList<?>) null, null));
+        assertNull(this.scriptsLoader.get((ScriptsList<?>) null, null, null));
 
         // SQL TEMPLATE
         final Map<String, Object> replacements = new HashMap<>();

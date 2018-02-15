@@ -22,6 +22,7 @@ package fr.landel.utils.scripts;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -221,10 +222,7 @@ public class ScriptsLoader {
      */
     public <E extends ScriptsList<E>, V> StringBuilder get(final ScriptsList<E> path, final String key, final V value) {
         if (key != null) {
-            final Map<String, V> replacements = new HashMap<>();
-            replacements.put(key, value);
-
-            return this.get(path, replacements);
+            return this.get(path, Collections.singletonMap(key, value));
         }
         return null;
     }
