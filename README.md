@@ -1,7 +1,6 @@
 # utils-template
 [![Build Status](https://api.travis-ci.org/Gilandel/utils-template.svg?branch=master)](https://travis-ci.org/Gilandel/utils-template/builds)
 [![Codacy Badge](https://api.codacy.com/project/badge/grade/93179c9285e84c389aaeb7dcc305b32f)](https://www.codacy.com/app/gilles/utils-template)
-[![Dependency Status](https://www.versioneye.com/user/projects/58b29b6f7b9e15003a17e544/badge.svg?style=flat)](https://www.versioneye.com/user/projects/58b29b6f7b9e15003a17e544)
 [![codecov.io](https://codecov.io/github/Gilandel/utils-template/coverage.svg?branch=master)](https://codecov.io/github/Gilandel/utils-template?branch=master)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/fr.landel.utils/utils-template/badge.svg)](https://maven-badges.herokuapp.com/maven-central/fr.landel.utils/utils-template)
 [![Javadocs](http://www.javadoc.io/badge/fr.landel.utils/utils-template.svg)](http://www.javadoc.io/doc/fr.landel.utils/utils-template)
