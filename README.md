@@ -22,7 +22,7 @@ Work progress:
 <dependency>
     <groupId>fr.landel.utils</groupId>
     <artifactId>utils-template</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.4</version>
 </dependency>
 ```
 
@@ -420,6 +420,10 @@ The result:
 ```
 
 ## Changelog
+### 1.0.4 - 2018-07-02
+- Misc: update dependencies
+- Misc: remove classpath definition from JAR (Wildfly warning when some dependencies are in multiple versions and defined provided)
+
 ### 1.0.3 - 2018-02-15
 - Add: variable tags to customize replacer template
 
